@@ -11,8 +11,6 @@ def test_constructor(db_session):
 
 
 def test_create_game(db_session):
-    db_session.query(Game).delete()
-
     controller = GameController(db_session)
     game = controller.create_game(name='Call of Duty')
 
@@ -24,18 +22,13 @@ def test_create_game(db_session):
 
 
 def test_find_game_by_id(db_session, create_game):
-    db_session.query(Game).delete()
     game = create_game(name='Unreal Tournament')
-
     controller = GameController(db_session)
     found_game = controller.find_game_by_id(game.id)
-
     assert found_game == game
 
 
 def test_find_all_games(db_session, create_game):
-    db_session.query(Game).delete()
-
     games = [
         create_game(name='Unreal Tournament'),
         create_game(name='Halo Guardians'),

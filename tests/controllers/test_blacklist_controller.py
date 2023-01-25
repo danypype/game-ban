@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from lib.controllers import BlacklistController
-from lib.models import Game, Blacklist
+from lib.models import Blacklist
 
 
 def test_constructor(db_session):
@@ -15,7 +15,6 @@ def test_create_entry(db_session, create_game):
     """
     Tests the creation of a Blacklist entry
     """
-    db_session.query(Game).delete()
     game = create_game(name='Call of Duty')
 
     controller = BlacklistController(db_session)
@@ -33,7 +32,6 @@ def test_find_by_game_id_and_email(db_session, create_game, create_blacklist_ent
     """
     Tests retrieving a Blacklist entry by game_id and email
     """
-    db_session.query(Game).delete()
     controller = BlacklistController(db_session)
 
     games = [
@@ -77,7 +75,6 @@ def test_get_report_for_player(db_session, create_game, create_blacklist_entry):
     Tests the player report is generated with correct information
         and as per requirements
     """
-    db_session.query(Game).delete()
     controller = BlacklistController(db_session)
 
     games = [
@@ -126,7 +123,7 @@ def test_get_report_for_player(db_session, create_game, create_blacklist_entry):
     )
     assert richard_roe_report == {
         'most_common_reason': 'terms_of_service_violation',
-        'times_reported_last_90_days': 2,
+        'times_reported_last_90_days': 1,
         'number_of_games_reported': 2
     }
 

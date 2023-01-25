@@ -135,4 +135,4 @@ Response example
 ```
 
 ## Deployment process
-This README section aims to document the deployment process as good as possible. To successfully deploy this application on AWS, follow these guidelines
+To successfully deploy this application on AWS, follow these guidelines

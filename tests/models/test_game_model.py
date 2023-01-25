@@ -17,8 +17,6 @@ def test_create_game(db_session):
     """
     Tests the creation of a Game record
     """
-    db_session.query(Game).delete()
-
     game = Game(name="Halo Guardians")
     db_session.add(game)
     db_session.commit()
@@ -36,8 +34,6 @@ def test_create_duplicate_game(db_session):
     """
     Ensures the code fails when trying to create a duplicate game
     """
-    db_session.query(Game).delete()
-
     game = Game(name="Halo Guardians")
     db_session.add(game)
     db_session.commit()

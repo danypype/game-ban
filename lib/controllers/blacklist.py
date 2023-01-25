@@ -66,7 +66,7 @@ class BlacklistController:
 
         reason_count = {}
         times_reported_last_90_days = 0
-        in_90_days = datetime.now() + timedelta(days=90)
+        ninety_days_ago = datetime.now() - timedelta(days=90)
         number_of_games_reported = 0
 
         for entry in black_list_entries:
@@ -74,7 +74,7 @@ class BlacklistController:
             reason_count[entry.reason] += 1
 
             created_at = entry.created_at
-            if created_at < in_90_days:
+            if created_at > ninety_days_ago:
                 times_reported_last_90_days += 1
 
             number_of_games_reported += 1

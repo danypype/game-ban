@@ -7,7 +7,7 @@ from lib.middlewares.auth import AuthMiddleware
 
 app = Flask(__name__)
 app.wsgi_app = AuthMiddleware(app.wsgi_app)
-session = Session()
+app.session = Session()
 
 
 @app.route('/games', methods=['POST'])
@@ -25,7 +25,7 @@ def create_game():
     if not body.get('name'):
         return jsonify({"message": "name is required"}), 400
 
-    game = GameController(session).create_game(name=body['name'])
+    game = GameController(app.session).create_game(name=body['name'])
     return jsonify(game.to_dict()), 201
 
 
@@ -37,7 +37,7 @@ def fetch_games():
     response example:
          [{"id":1,"name":"Halo Guardians"},{"id":2,"name":"Call of Duty"}]
     """
-    games = GameController(session).find_all_games()
+    games = GameController(app.session).find_all_games()
     return jsonify([game.to_dict() for game in games]), 200
 
 
@@ -52,22 +52,22 @@ def append_to_blacklist():
     body = request.json
 
     if not body.get('game_id'):
-        return jsonify({"message": "game_id is required"}), 400
+        return jsonify({'message': 'game_id is required'}), 400
     if not body.get('email'):
-        return jsonify({"message": "email is required"}), 400
+        return jsonify({'message': 'email is required'}), 400
     if not body.get('reason'):
-        return jsonify({"message": "reason is required"}), 400
+        return jsonify({'message': 'reason is required'}), 400
 
     game_id = body['game_id']
     email = body['email']
     reason = body['reason']
 
-    game = GameController(session).find_game_by_id(game_id)
+    game = GameController(app.session).find_game_by_id(game_id)
 
     if game is None:
         raise NotFound('game_id not found')
 
-    black_list_controller = BlacklistController(session)
+    black_list_controller = BlacklistController(app.session)
     black_list_entry = black_list_controller.find_by_game_id_and_email(
         game_id=game_id,
         email=email
@@ -106,9 +106,9 @@ def check_blacklist():
     if not email:
         return jsonify({"message": "email must be provided"}), 400
 
-    report = BlacklistController(session).get_report_for_player(email=email)
+    report = BlacklistController(app.session).get_report_for_player(email=email)
 
     if not report['number_of_games_reported']:
-        return jsonify({"message": "Email not found"}), 404
+        return jsonify({"message": "email not found"}), 404
 
     return jsonify(report), 200

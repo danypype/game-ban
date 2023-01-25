@@ -19,7 +19,6 @@ def test_create_blacklist_entry(db_session, create_game):
     """
     Takes the creation of a Blacklist method
     """
-    db_session.query(Game).delete()
     game_entry = create_game(name='Halo Guardians')
 
     black_list = Blacklist(
@@ -44,8 +43,6 @@ def test_create_duplicate_blacklist_entry(db_session):
     """
     Ensures the code fails when trying to create a duplicate Blacklist entry
     """
-    db_session.query(Game).delete()
-
     game_entry = Game(name='Halo Guardians')
     db_session.add(game_entry)
     db_session.commit()

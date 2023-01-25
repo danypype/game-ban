@@ -1,12 +1,20 @@
-from lib.db import Session
+from app import app
 from lib.models import Game, Blacklist
 
 import pytest
 
 
 @pytest.fixture
+def api_client():
+    return app.test_client()
+
+
+@pytest.fixture
 def db_session():
-    return Session()
+    session = app.session
+    session.query(Game).delete()  # have all tests start with a clean DB
+    session.commit()
+    return session
 
 
 @pytest.fixture
