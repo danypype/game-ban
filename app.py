@@ -2,9 +2,11 @@ from flask import Flask, request, jsonify
 from werkzeug.exceptions import BadRequest, NotFound
 from lib.db import Session
 from lib.controllers import GameController, BlacklistController
+from lib.middlewares.auth import AuthMiddleware
 
 
 app = Flask(__name__)
+app.wsgi_app = AuthMiddleware(app.wsgi_app)
 session = Session()
 
 

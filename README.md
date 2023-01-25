@@ -53,6 +53,15 @@ $ ./scripts/runtests.sh
 
 ## API Docs
 
+### Authentication
+
+All requests sent to the API must provide an `api_key` parameter. When this parameter is not provided or is invalid, the server will reply with `401 Unauthorized`
+
+Example **valid** request
+```
+GET http://host:port/games?api_key=ab3f10
+```
+
 ### Routes
 
 #### POST /games
@@ -61,7 +70,7 @@ Crates a game
 $ curl -X POST \
     -H "Content-Type: application/json" \
     -d '{"name": "Halo Guardians"}' \
-    http://127.0.0.1:5000/games
+    http://host:port/games?api_key\=<api_key>
 ```
 The response includes the Game ID. Example
 ```json
@@ -74,7 +83,7 @@ The response includes the Game ID. Example
 #### GET /games
 Retrieve all games
 ```commandline
-$ curl http://127.0.0.1:5000/games
+$ curl http://host:port/games\?api_key\=<api_key>
 ```
 The response contains a list of all games. Example
 ```json
@@ -100,7 +109,7 @@ Create a blacklist entry for the given game and player
 $ curl -X POST \
     -H "Content-Type: application/json" \
     -d '{"game_id": 1, "email": "john.doe@example.com", "reason": "offensive_language"}' \
-    http://127.0.0.1:5000/blacklist
+    http://host:port/blacklist\?api_key\=<api_key>
 ```
 Response example
 ```json
@@ -114,7 +123,7 @@ Response example
 #### GET /blacklist/check
 Retrieve information about a given player in the blacklist
 ```commandline
-$ curl curl -X GET http://127.0.0.1:5000/blacklist/check\?email\=john.doe@example.com
+$ curl curl -X GET http://host:port/blacklist/check\?email\=john.doe@example.com\&api_key\=<api_key>
 ```
 Response example
 ```json
