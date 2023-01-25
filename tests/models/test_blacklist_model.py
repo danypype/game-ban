@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 from lib.models import BaseModel, Game, Blacklist
 
@@ -14,15 +15,12 @@ def test_blacklist_model():
     assert hasattr(Blacklist, 'reason')
 
 
-def test_create_blacklist_entry(db_session):
+def test_create_blacklist_entry(db_session, create_game):
     """
     Takes the creation of a Blacklist method
     """
     db_session.query(Game).delete()
-
-    game_entry = Game(name='Halo Guardians')
-    db_session.add(game_entry)
-    db_session.commit()
+    game_entry = create_game(name='Halo Guardians')
 
     black_list = Blacklist(
         game_id=game_entry.id,
@@ -33,8 +31,10 @@ def test_create_blacklist_entry(db_session):
     db_session.commit()
 
     black_list_entry = db_session.query(Blacklist).one()
-    entry_dict = black_list_entry.to_dict()
+    assert isinstance(black_list_entry.created_at, datetime)
+    assert isinstance(black_list_entry.updated_at, datetime)
 
+    entry_dict = black_list_entry.to_dict()
     assert entry_dict['game_id'] == game_entry.id
     assert entry_dict['email'] == 'john.doe@example.com'
     assert entry_dict['reason'] == 'terms_of_service_violation'

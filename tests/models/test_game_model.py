@@ -24,9 +24,11 @@ def test_create_game(db_session):
     db_session.commit()
 
     game_entry = db_session.query(Game).one()
-    entry_dict = game_entry.to_dict()
+    assert isinstance(game_entry.created_at, datetime)
+    assert isinstance(game_entry.created_at, datetime)
 
-    assert isinstance(entry_dict['id'], int)
+    entry_dict = game_entry.to_dict()
+    assert entry_dict['id'] == game_entry.id
     assert entry_dict['name'] == 'Halo Guardians'
 
 
