@@ -8,7 +8,9 @@ class Blacklist(BaseModel):
         PrimaryKeyConstraint('game_id', 'email'),
     )
 
-    game_id = Column(Integer, ForeignKey('games.id'))
+    game_id = Column(
+        Integer, ForeignKey('games.id', ondelete='CASCADE'), index=True
+    )
     email = Column(String(320), nullable=False, index=True)
     reason = Column(String(512), nullable=False, index=True)
 
