@@ -21,7 +21,7 @@ def create_game():
     body = request.json
 
     if not body.get('name'):
-        raise BadRequest('name is required')
+        return jsonify({"message": "name is required"}), 400
 
     game = GameController(session).create_game(name=body['name'])
     return jsonify(game.to_dict()), 201
@@ -50,11 +50,11 @@ def append_to_blacklist():
     body = request.json
 
     if not body.get('game_id'):
-        raise BadRequest('game_id is required')
+        return jsonify({"message": "game_id is required"}), 400
     if not body.get('email'):
-        raise BadRequest('email is required')
+        return jsonify({"message": "email is required"}), 400
     if not body.get('reason'):
-        raise BadRequest('reason is required')
+        return jsonify({"message": "reason is required"}), 400
 
     game_id = body['game_id']
     email = body['email']
@@ -72,7 +72,9 @@ def append_to_blacklist():
     )
 
     if black_list_entry:
-        raise BadRequest(f'player {email} is already black-listed for game_id {game_id}')
+        return jsonify({
+            'message': f'player {email} is already black-listed for game_id {game_id}'
+        }), 400
 
     black_list_entry = black_list_controller.create_entry(
         game_id=game_id,
@@ -100,7 +102,11 @@ def check_blacklist():
     email = args.get('email')
 
     if not email:
-        raise BadRequest('email is required')
+        return jsonify({"message": "email must be provided"}), 400
 
     report = BlacklistController(session).get_report_for_player(email=email)
+
+    if not report['number_of_games_reported']:
+        return jsonify({"message": "Email not found"}), 404
+
     return jsonify(report), 200
