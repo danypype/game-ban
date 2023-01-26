@@ -12,7 +12,7 @@ Make sure the following software is installed in your OS
 - Pip v21.2.x
 - Docker v20.10.x
 
-### 2. Create your .env files
+### 2. Create your .env file (for development)
 After cloning this repo, create a .env file
 ```commandline
 $ cp .env.test .env
