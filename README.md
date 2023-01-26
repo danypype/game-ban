@@ -26,6 +26,9 @@ $ pip install -r requirements.txt
 
 ### 4. Set up the dev and test databases
 Make sure you can connect to MySQL using the *root* user. Then, connect and create the development and test databases
+```commandline
+$ mysql -u root
+```
 ```sql
 mysql> CREATE DATABASE gameban;
 Query OK, 1 row affected (0.03 sec)
@@ -44,7 +47,7 @@ After setting up your databases, to run this back-end app execute
 ```commandline
 $ ./scripts/runapp.sh
 ```
-This command will start the Flask app, and it will be listening on port `5000`
+This command will start the Flask app, and it will be listening on `localhost:5000`
 
 ## Running tests
 To run all tests execute
@@ -222,12 +225,12 @@ The command from above will build a Docker image with all app dependencies + Gun
 3. Crate an [ECS service](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/create-service.html) in the cluster to keep a set of tasks running. Use the following settings
    - Capacity provider: FARGATE
    - Task definition
-       + Family: `gameban-api` (the task created earlier)
+       + Family: `gameban-api` (that of the task created earlier)
    - Service name: `gameban-api-service`
    - Desired tasks: `64`**
    Before creating the task, continue with the steps below
 
-#### Set up an Application Load Balancer
+### Set up an Application Load Balancer
 An ECS service that runs multiple tasks needs an [Application Load Balancer](https://aws.amazon.com/elasticloadbalancing/application-load-balancer/) to distribute its traffic across all its RUNNING tasks.
 
 While creating the ECS task, under "Load balancing", choose the following settings
@@ -244,15 +247,15 @@ After all this, you should have a pretty good initial deployment of this API on 
 
 - (1) Granting an IAM user full access to AWS services is not ideal, but is a good enough starting point. Ideally, the [Principle of least privilege](https://en.wikipedia.org//wiki/Principle_of_least_privilege) should be followed
 - (2) A CIDR block of class `/24` establishes a range of 256 (`10.0.0.0` to `10.0.0.255`) available IP addresses (enough for the purposes of this VPC)
-- (3) We don't want the instance to be publicly accessible (i.e, obtain its own public IP address), unless this is a development instance. Production instances should *always* be not publicly accessible
-- (4) ECR repositories containing production images should be made private so only people in our AWS account and with the right permissions can pull them
-- (5) For the purposes of this deliverable we'll work with HTTP to make things easier. However, for security concerns, all production APIs which are publicly accessible should run on HTTPS. Running on HTTPS carries over more configuration overhead
+- (3) We don't want the database instance to be publicly accessible (i.e, obtain its own public IP address), unless this is a development instance. Production instances should *always* be not publicly accessible
+- (4) ECR repositories containing production images should be made private so only people (and services) in our AWS account and with the right permissions can pull them
+- (5) For the purposes of this deliverable we'll work with HTTP to make things easier. However, for security concerns, all production APIs which are publicly accessible (like this one, which is behind an Application Load Balancer) should run on HTTPS. Running on HTTPS carries over more configuration overhead
 
 ### Performance Notes
 
-- `*` A single *db.m6i.xlarge* RDS instance provides 4 vCPUs; 16GB RAM; 10,000Mbps. Enough to sustain 100 concurrent requests, and provide an average response time of less than one second
+- `*` A single *db.m6i.xlarge* RDS instance provides 4 vCPUs; 16GB RAM; 10,000Mbps. Enough to sustain 100 concurrent requests, and provide an average query time of less than one second
     + Keep in mind this is a rough initial estimate for performance
-    + A proper benchmarking of the API should be done once deployed in order to see if we can reduce the DB instance size to reduce costs
+    + A proper benchmarking of the API should be done once deployed in order to see if we can reduce the DB instance size to keep costs at their lowest
     + To help with database performance, careful indexing of the tables was done
     + Database indexes should be tuned as requirements change and the API increases in functionality
 - `**` Having **64 tasks**, given each task runs one Gunicorn worker, allows for up to **64 concurrent requests**. So, in order to handle 100 requests per seconds, the average response time we should achieve is `64/100 = 0.64seconds`, or **640ms** - with a good RDS instance size, and proper index and query tuning, this is pretty doable in my opinion
