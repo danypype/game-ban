@@ -176,7 +176,7 @@ When creating the VPC, select
 - DB instance class: `db.m6i.xlarge`*
 - VPC: Choose `production`, the VPC from the previous step
 
-### Crate a .env.aws file
+### Crate a .env.aws file (for production)
 We use .env for development and .env.test for testing. In order to deploy to AWS, let's create a .env.aws file in this directory
 ```commandline
 $ cp .env.test .env.aws
