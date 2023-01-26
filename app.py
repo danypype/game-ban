@@ -65,7 +65,7 @@ def append_to_blacklist():
     game = GameController(app.session).find_game_by_id(game_id)
 
     if game is None:
-        raise NotFound('game_id not found')
+        return jsonify({'message': 'game_id not found'}), 404
 
     black_list_controller = BlacklistController(app.session)
     black_list_entry = black_list_controller.find_by_game_id_and_email(
@@ -78,11 +78,16 @@ def append_to_blacklist():
             'message': f'player {email} is already black-listed for game_id {game_id}'
         }), 400
 
-    black_list_entry = black_list_controller.create_entry(
-        game_id=game_id,
-        email=email,
-        reason=reason
-    )
+    try:
+        black_list_entry = black_list_controller.create_entry(
+            game_id=game_id,
+            email=email,
+            reason=reason
+        )
+    except ValueError as error:
+        message, = error.args
+        return jsonify({'message': message}), 400
+
     return jsonify(black_list_entry.to_dict()), 201
 
 

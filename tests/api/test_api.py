@@ -52,6 +52,7 @@ def test_append_to_blacklist(api_client, create_game):
     """
     game = create_game(name='Halo Guardians')
 
+    # request without game_id
     response = api_client.post(
         f'/blacklist?api_key={api_key}',
         json={
@@ -62,6 +63,7 @@ def test_append_to_blacklist(api_client, create_game):
     assert response.status_code == 400
     assert response.json == {'message': 'game_id is required'}
 
+    # request without email
     response = api_client.post(
         f'/blacklist?api_key={api_key}',
         json={
@@ -72,6 +74,19 @@ def test_append_to_blacklist(api_client, create_game):
     assert response.status_code == 400
     assert response.json == {'message': 'email is required'}
 
+    # request with invalid email
+    response = api_client.post(
+        f'/blacklist?api_key={api_key}',
+        json={
+            'game_id': game.id,
+            'email': 'john.doe@',
+            'reason': 'unwanted_behavior'
+        }
+    )
+    assert response.status_code == 400
+    assert response.json == {'message': 'invalid value for email'}
+
+    # valid request
     response = api_client.post(
         f'/blacklist?api_key={api_key}',
         json={
@@ -87,6 +102,7 @@ def test_append_to_blacklist(api_client, create_game):
         'reason': 'unwanted_behavior'
     }
 
+    # request with duplicate entry
     response = api_client.post(
         f'/blacklist?api_key={api_key}',
         json={

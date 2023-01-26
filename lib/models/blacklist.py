@@ -1,5 +1,8 @@
 from lib.models.base import BaseModel
 from sqlalchemy import Column, Integer, String, ForeignKey, PrimaryKeyConstraint
+from sqlalchemy.orm import validates
+
+import re
 
 
 class Blacklist(BaseModel):
@@ -13,6 +16,14 @@ class Blacklist(BaseModel):
     )
     email = Column(String(320), nullable=False, index=True)
     reason = Column(String(512), nullable=False, index=True)
+
+    @validates('email')
+    def validate_email(self, key, value):
+        regex = re.compile(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+
+        if not re.fullmatch(regex, value):
+            raise ValueError('invalid value for email')
+        return value
 
     def to_dict(self):
         return {
