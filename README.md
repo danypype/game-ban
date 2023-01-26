@@ -213,7 +213,7 @@ The command from above will build a Docker image with all app dependencies + Gun
        + 2GB Memory
    - Task execution role: Crate new role
    - Network mode: `awsvpc`
-   - Entry point: `[". ./.env && gunicorn -b 0.0.0.0:8000 app:app"]`
+   - Command: `['/bin/bash', '-c', '". ./.env && gunicorn -b 0.0.0.0:8000 app:app"']`
        + This tells ECS what command to run in the container when it launches
 2. Crate an ECS cluster to host run tasks on, with the following settings
    - Cluster name: `gameban-api-cluster`
